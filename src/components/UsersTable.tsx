@@ -2,11 +2,12 @@ import { User } from "../types";
 
 type UsersTableProps = {
   users: User[];
+  showColors: boolean;
 };
 
-export default function UsersTable({ users }: UsersTableProps) {
+export default function UsersTable({ users, showColors }: UsersTableProps) {
   return (
-    <table>
+    <table width="100%">
       <thead>
         <tr>
           <th>Image</th>
@@ -17,9 +18,12 @@ export default function UsersTable({ users }: UsersTableProps) {
         </tr>
       </thead>
       <tbody>
-        {users.map((user) => {
+        {users.map((user, index) => {
+          const bgColor = index % 2 === 0 ? "#333" : "#555";
+          const color = showColors ? bgColor : "transparent";
+
           return (
-            <tr key={user.id.value}>
+            <tr key={index} style={{ backgroundColor: color }}>
               <td>
                 <img src={user.picture.thumbnail} alt="user image" />
               </td>
