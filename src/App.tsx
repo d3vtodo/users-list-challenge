@@ -1,20 +1,25 @@
 /* eslint-disable react/react-in-jsx-scope */
 import { useEffect, useMemo, useRef, useState } from 'react'
 import './App.css'
-import { type User } from './types'
+import { SortBy, type User } from './types.d'
 import UsersTable from './components/UsersTable'
 
 function App() {
   const originalUSers = useRef<User[]>([])
   const [users, setUsers] = useState<User[]>([])
   const [toggleColors, setToggleColors] = useState(false)
-  const [sortByCountry, setSortByCountry] = useState(false)
+  const [sorting, setSorting] = useState<SortBy>(SortBy.NONE)
   const [filterCountry, setFilterCountry] = useState<string | undefined>(
     undefined
   )
 
-  const toggleSortByCountry = () => {
-    setSortByCountry((prevState) => !prevState)
+  const toggleCountrySort = () => {
+    if (sorting === SortBy.COUNTRY) return setSorting(SortBy.NONE)
+    setSorting(SortBy.COUNTRY)
+  }
+
+  const handleChangeSort = (sort: SortBy) => {
+    setSorting(sort)
   }
 
   const handleDelete = (email: string) => {
@@ -49,12 +54,19 @@ function App() {
   }, [users, filterCountry])
 
   const sortedUsers = useMemo(() => {
-    return sortByCountry
-      ? filteredUsers.toSorted((a, b) =>
-          a.location.country.localeCompare(b.location.country)
-        )
-      : filteredUsers
-  }, [filteredUsers, sortByCountry])
+    if (sorting === SortBy.NONE) return filteredUsers
+
+    const compareProperties: Record<string, (user: User) => any> = {
+      [SortBy.COUNTRY]: (user) => user.location.country,
+      [SortBy.LAST]: (user) => user.name.last,
+      [SortBy.NAME]: (user) => user.name.first
+    }
+
+    return filteredUsers.toSorted((a, b) => {
+      const extractProptery = compareProperties[sorting]
+      return extractProptery(a).localeCompare(extractProptery(b))
+    })
+  }, [filteredUsers, sorting])
 
   return (
     <div>
@@ -67,8 +79,8 @@ function App() {
         >
           Toggle Colors
         </button>
-        <button onClick={toggleSortByCountry}>
-          {sortByCountry ? 'Order Random' : 'Order by country'}
+        <button onClick={toggleCountrySort}>
+          {sorting === SortBy.COUNTRY ? 'Order Random' : 'Order by country'}
         </button>
         <button onClick={resetUsers}>Get initial state</button>
         <input
@@ -81,6 +93,7 @@ function App() {
       <main>
         <UsersTable
           users={sortedUsers}
+          changeSorting={handleChangeSort}
           onDelete={handleDelete}
           showColors={toggleColors}
         />

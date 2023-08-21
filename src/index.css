@@ -45,7 +45,6 @@ button {
   font-family: inherit;
   background-color: #1a1a1a;
   cursor: pointer;
-  margin: 0 5px;
   transition: border-color 0.25s;
 }
 button:hover {
@@ -71,4 +70,19 @@ button:focus-visible {
 
 main {
   margin-top: 25px;
+}
+
+header {
+  display: flex;
+  margin-bottom: 16px;
+  gap: 15px;
+  justify-content: center;
+}
+
+.pointer {
+  cursor: pointer;
+}
+
+.pointer:hover {
+  color: #747bff;
 }

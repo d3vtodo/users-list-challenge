@@ -1,24 +1,32 @@
-import { type User } from '../types'
+import { SortBy, type User } from '../types.d'
 
 interface UsersTableProps {
   users: User[]
   showColors: boolean
   onDelete: (email: string) => void
+  changeSorting: (sort: SortBy) => void
 }
 
 export default function UsersTable({
   users,
   showColors,
-  onDelete
+  onDelete,
+  changeSorting
 }: UsersTableProps) {
   return (
     <table width="100%">
       <thead>
         <tr>
           <th>Image</th>
-          <th>Name</th>
-          <th>Last Name</th>
-          <th>Country</th>
+          <th className="pointer" onClick={() => changeSorting(SortBy.NAME)}>
+            Name
+          </th>
+          <th className="pointer" onClick={() => changeSorting(SortBy.LAST)}>
+            Last Name
+          </th>
+          <th className="pointer" onClick={() => changeSorting(SortBy.COUNTRY)}>
+            Country
+          </th>
           <th>CTA</th>
         </tr>
       </thead>
