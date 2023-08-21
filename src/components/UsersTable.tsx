@@ -1,11 +1,16 @@
-import { User } from "../types";
+import { type User } from '../types'
 
-type UsersTableProps = {
-  users: User[];
-  showColors: boolean;
-};
+interface UsersTableProps {
+  users: User[]
+  showColors: boolean
+  onDelete: (email: string) => void
+}
 
-export default function UsersTable({ users, showColors }: UsersTableProps) {
+export default function UsersTable({
+  users,
+  showColors,
+  onDelete
+}: UsersTableProps) {
   return (
     <table width="100%">
       <thead>
@@ -19,8 +24,8 @@ export default function UsersTable({ users, showColors }: UsersTableProps) {
       </thead>
       <tbody>
         {users.map((user, index) => {
-          const bgColor = index % 2 === 0 ? "#333" : "#555";
-          const color = showColors ? bgColor : "transparent";
+          const bgColor = index % 2 === 0 ? '#333' : '#555'
+          const color = showColors ? bgColor : 'transparent'
 
           return (
             <tr key={index} style={{ backgroundColor: color }}>
@@ -31,12 +36,18 @@ export default function UsersTable({ users, showColors }: UsersTableProps) {
               <td>{user.name.last}</td>
               <td>{user.location.country}</td>
               <td>
-                <button>Delete</button>
+                <button
+                  onClick={() => {
+                    onDelete(user.email)
+                  }}
+                >
+                  Delete
+                </button>
               </td>
             </tr>
-          );
+          )
         })}
       </tbody>
     </table>
-  );
+  )
 }
