@@ -1,17 +1,18 @@
 /* eslint-disable react/react-in-jsx-scope */
-import { useEffect, useMemo, useRef, useState } from 'react'
+import { useMemo, useRef, useState } from 'react'
 import './App.css'
 import { SortBy, type User } from './types.d'
 import UsersTable from './components/UsersTable'
+import { useUsers } from './hooks/useUsers'
 
 function App() {
   const originalUSers = useRef<User[]>([])
-  const [users, setUsers] = useState<User[]>([])
   const [toggleColors, setToggleColors] = useState(false)
   const [sorting, setSorting] = useState<SortBy>(SortBy.NONE)
   const [filterCountry, setFilterCountry] = useState<string | undefined>(
     undefined
   )
+  const { users, isLoading, fetchNextPage, hasNextPage } = useUsers()
 
   const toggleCountrySort = () => {
     if (sorting === SortBy.COUNTRY) return setSorting(SortBy.NONE)
@@ -30,18 +31,6 @@ function App() {
   const resetUsers = () => {
     setUsers(originalUSers.current)
   }
-
-  useEffect(() => {
-    fetch('https://randomuser.me/api?results=100')
-      .then(async (res) => await res.json())
-      .then((res) => {
-        setUsers(res.results)
-        originalUSers.current = res.results
-      })
-      .catch((err) => {
-        console.error(err)
-      })
-  }, [])
 
   const filteredUsers = useMemo(() => {
     return typeof filterCountry === 'string' && filterCountry.length > 0
@@ -91,12 +80,18 @@ function App() {
         />
       </header>
       <main>
-        <UsersTable
-          users={sortedUsers}
-          changeSorting={handleChangeSort}
-          onDelete={handleDelete}
-          showColors={toggleColors}
-        />
+        {users?.length > 0 && (
+          <UsersTable
+            users={sortedUsers}
+            changeSorting={handleChangeSort}
+            onDelete={handleDelete}
+            showColors={toggleColors}
+          />
+        )}
+        {isLoading && <div>Loading...</div>}
+        {!isLoading && hasNextPage && (
+          <button onClick={() => void fetchNextPage()}>Load more users</button>
+        )}
       </main>
     </div>
   )
