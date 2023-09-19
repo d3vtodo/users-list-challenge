@@ -1,18 +1,18 @@
 /* eslint-disable react/react-in-jsx-scope */
-import { useMemo, useRef, useState } from 'react'
+import { useMemo, useState } from 'react'
 import './App.css'
 import { SortBy, type User } from './types.d'
 import UsersTable from './components/UsersTable'
 import { useUsers } from './hooks/useUsers'
 
 function App() {
-  const originalUSers = useRef<User[]>([])
   const [toggleColors, setToggleColors] = useState(false)
   const [sorting, setSorting] = useState<SortBy>(SortBy.NONE)
   const [filterCountry, setFilterCountry] = useState<string | undefined>(
     undefined
   )
-  const { users, isLoading, fetchNextPage, hasNextPage } = useUsers()
+  const { users, isLoading, isFetching, fetchNextPage, hasNextPage } =
+    useUsers()
 
   const toggleCountrySort = () => {
     if (sorting === SortBy.COUNTRY) return setSorting(SortBy.NONE)
@@ -21,15 +21,6 @@ function App() {
 
   const handleChangeSort = (sort: SortBy) => {
     setSorting(sort)
-  }
-
-  const handleDelete = (email: string) => {
-    const filteredUsers = users.filter((user) => user.email !== email)
-    setUsers(filteredUsers)
-  }
-
-  const resetUsers = () => {
-    setUsers(originalUSers.current)
   }
 
   const filteredUsers = useMemo(() => {
@@ -71,7 +62,6 @@ function App() {
         <button onClick={toggleCountrySort}>
           {sorting === SortBy.COUNTRY ? 'Order Random' : 'Order by country'}
         </button>
-        <button onClick={resetUsers}>Get initial state</button>
         <input
           type="text"
           onChange={(e) => setFilterCountry(e.target.value)}
@@ -84,11 +74,10 @@ function App() {
           <UsersTable
             users={sortedUsers}
             changeSorting={handleChangeSort}
-            onDelete={handleDelete}
             showColors={toggleColors}
           />
         )}
-        {isLoading && <div>Loading...</div>}
+        {(isLoading || isFetching) && <div>Loading...</div>}
         {!isLoading && hasNextPage && (
           <button onClick={() => void fetchNextPage()}>Load more users</button>
         )}

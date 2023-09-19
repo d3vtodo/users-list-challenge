@@ -3,14 +3,12 @@ import { SortBy, type User } from '../types.d'
 interface UsersTableProps {
   users: User[]
   showColors: boolean
-  onDelete: (email: string) => void
   changeSorting: (sort: SortBy) => void
 }
 
 export default function UsersTable({
   users,
   showColors,
-  onDelete,
   changeSorting
 }: UsersTableProps) {
   return (
@@ -27,7 +25,6 @@ export default function UsersTable({
           <th className="pointer" onClick={() => changeSorting(SortBy.COUNTRY)}>
             Country
           </th>
-          <th>CTA</th>
         </tr>
       </thead>
       <tbody>
@@ -43,15 +40,6 @@ export default function UsersTable({
               <td>{user.name.first}</td>
               <td>{user.name.last}</td>
               <td>{user.location.country}</td>
-              <td>
-                <button
-                  onClick={() => {
-                    onDelete(user.email)
-                  }}
-                >
-                  Delete
-                </button>
-              </td>
             </tr>
           )
         })}
